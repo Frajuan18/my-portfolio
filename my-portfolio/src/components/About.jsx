@@ -52,9 +52,9 @@ const About = () => {
               <div className="relative mt-16">
                 <div className="grid grid-cols-3 gap-4">
                   {[
-                    { value: "12+", label: "Years", color: "from-blue-100 to-blue-50" },
-                    { value: "250+", label: "Projects", color: "from-purple-100 to-purple-50" },
-                    { value: "50+", label: "Clients", color: "from-emerald-100 to-emerald-50" }
+                    { value: "2+", label: "Years", color: "from-blue-100 to-blue-50" },
+                    { value: "20+", label: "Projects", color: "from-purple-100 to-purple-50" },
+                    { value: "15+", label: "Clients", color: "from-emerald-100 to-emerald-50" }
                   ].map((stat, index) => (
                     <motion.div
                       key={index}

@@ -47,7 +47,7 @@ const Hero = () => {
           </div>
           
           <p className="text-gray-500 text-lg leading-relaxed max-w-xs font-normal">
-            Designer with 12 years experience sketching, building and coaching. 
+            Designer with 2 years experience sketching, building and coaching. 
             I love fun UI and making helpful products.
           </p>
 
@@ -158,7 +158,7 @@ const Hero = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Projects</p>
-                    <p className="text-xl font-bold text-gray-900">120+</p>
+                    <p className="text-xl font-bold text-gray-900">20+</p>
                   </div>
                 </div>
               </motion.div>
@@ -173,7 +173,7 @@ const Hero = () => {
                           shadow-[0_15px_35px_-10px_rgba(0,0,0,0.3)]"
               >
                 <div className="text-center">
-                  <p className="text-2xl font-bold">12+</p>
+                  <p className="text-2xl font-bold">2+</p>
                   <p className="text-xs opacity-80 mt-1">Years Exp</p>
                 </div>
               </motion.div>
@@ -287,8 +287,8 @@ const Hero = () => {
             <div className="grid grid-cols-3 gap-3">
               {[
                 { value: "98%", label: "Satisfied", delay: 0.1 },
-                { value: "50+", label: "Clients", delay: 0.2 },
-                { value: "120+", label: "Projects", delay: 0 }
+                { value: "15+", label: "Clients", delay: 0.2 },
+                { value: "20+", label: "Projects", delay: 0 }
               ].map((stat, index) => (
                 <motion.div
                   key={index}
