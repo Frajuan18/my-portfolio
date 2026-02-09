@@ -14,18 +14,28 @@ const Navbar = () => {
       
       // Update active section based on scroll position
       const sections = ['home', 'about', 'experience', 'projects', 'skills', 'contact'];
-      const current = sections.find(section => {
+      
+      // Get current scroll position
+      const scrollPosition = window.scrollY + 100; // Add offset for navbar height
+      
+      for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
+          const sectionTop = element.offsetTop;
+          const sectionHeight = element.clientHeight;
+          
+          if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+            setActiveSection(section);
+            break;
+          }
         }
-        return false;
-      });
-      if (current) setActiveSection(current);
+      }
     };
     
     window.addEventListener('scroll', handleScroll);
+    // Initial check
+    handleScroll();
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -41,9 +51,21 @@ const Navbar = () => {
   const handleNavClick = (href, section) => {
     setIsMenuOpen(false);
     setActiveSection(section);
-    const element = document.querySelector(href);
+    
+    const element = document.getElementById(section);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      // Calculate offset for navbar height
+      const navbarHeight = 80; // Approximate navbar height
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+      
+      // Update URL hash without scrolling
+      window.history.pushState(null, null, href);
     }
   };
 
@@ -200,24 +222,22 @@ const Navbar = () => {
             
             {/* Logo */}
             <div className="flex items-center">
-              <a 
-                href="#home" 
-                className="text-xl sm:text-2xl font-bold text-gray-900"
+              <button 
                 onClick={(e) => {
                   e.preventDefault();
                   handleNavClick('#home', 'home');
                 }}
+                className="text-xl sm:text-2xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
               >
                 Fraol<span className="text-gray-500">.</span>
-              </a>
+              </button>
             </div>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8 lg:space-x-10">
               {navLinks.map((link) => (
-                <a
+                <button
                   key={link.name}
-                  href={link.href}
                   onClick={(e) => {
                     e.preventDefault();
                     handleNavClick(link.href, link.section);
@@ -232,7 +252,7 @@ const Navbar = () => {
                   <span className={`absolute -bottom-1 left-0 h-0.5 bg-gray-900 transition-all duration-300 ${
                     activeSection === link.section ? 'w-full' : 'w-0 group-hover:w-full'
                   }`}></span>
-                </a>
+                </button>
               ))}
             </div>
 
@@ -278,21 +298,20 @@ const Navbar = () => {
               <div className="container mx-auto px-4 sm:px-6 py-4">
                 <div className="flex flex-col space-y-4">
                   {navLinks.map((link) => (
-                    <a
+                    <button
                       key={link.name}
-                      href={link.href}
                       onClick={(e) => {
                         e.preventDefault();
                         handleNavClick(link.href, link.section);
                       }}
-                      className={`py-3 border-b border-gray-100 last:border-b-0 transition-colors duration-300 ${
+                      className={`py-3 border-b border-gray-100 last:border-b-0 transition-colors duration-300 text-left ${
                         activeSection === link.section 
                           ? 'text-gray-900 font-medium' 
                           : 'text-gray-600 hover:text-gray-900'
                       }`}
                     >
                       {link.name}
-                    </a>
+                    </button>
                   ))}
                   <motion.button
                     onClick={() => {
