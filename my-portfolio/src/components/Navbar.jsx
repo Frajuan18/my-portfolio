@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { FaEnvelope, FaTelegram, FaInstagram, FaGoogle, FaArrowRight, FaTimes } from 'react-icons/fa';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isContactPopupOpen, setIsContactPopupOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
 
@@ -27,7 +29,6 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Updated navLinks to match your sections exactly
   const navLinks = [
     { name: 'Home', href: '#home', section: 'home' },
     { name: 'About', href: '#about', section: 'about' },
@@ -46,121 +47,270 @@ const Navbar = () => {
     }
   };
 
+  const contactOptions = [
+    {
+      id: "email",
+      label: "Send Email",
+      icon: <FaEnvelope className="text-blue-500" size={20} />,
+      action: () => window.location.href = "mailto:fraolabmas@gmail.com",
+      color: "from-blue-100 to-blue-50",
+      description: "fraolabmas@gmail.com"
+    },
+    {
+      id: "telegram",
+      label: "Message on Telegram",
+      icon: <FaTelegram className="text-sky-500" size={20} />,
+      action: () => window.open("https://t.me/Fra_juan", "_blank"),
+      color: "from-sky-100 to-sky-50",
+      description: "@Fra_juan"
+    },
+    {
+      id: "instagram",
+      label: "DM on Instagram",
+      icon: <FaInstagram className="text-pink-500" size={20} />,
+      action: () => window.open("https://instagram.com/fres.h925", "_blank"),
+      color: "from-pink-100 to-pink-50",
+      description: "@fres.h925"
+    },
+    {
+      id: "gmail",
+      label: "Open Gmail",
+      icon: <FaGoogle className="text-red-500" size={20} />,
+      action: () => window.open("https://mail.google.com/mail/?view=cm&fs=1&to=fraolabmas@gmail.com", "_blank"),
+      color: "from-red-100 to-red-50",
+      description: "Compose in Gmail"
+    }
+  ];
+
   return (
-    <nav 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'py-4 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm' 
-          : 'py-5 bg-white'
-      }`}
-    >
-      <div className="container mx-auto px-6">
-        <div className="flex justify-between items-center">
-          
-          {/* Logo - Simple Text (Original UI) */}
-          <div className="flex items-center">
-            <a 
-              href="#home" 
-              className="text-2xl font-bold text-gray-900"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavClick('#home', 'home');
-              }}
-            >
-              Fraol<span className="text-gray-500">.</span>
-            </a>
-          </div>
-
-          {/* Desktop Navigation - Simple Links (Original UI) */}
-          <div className="hidden md:flex items-center space-x-10">
-            {navLinks.map((link, index) => (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick(link.href, link.section);
-                }}
-                className="text-gray-600 hover:text-gray-900 transition-colors duration-300 text-sm font-medium relative group"
-              >
-                {link.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gray-900 group-hover:w-full transition-all duration-300"></span>
-              </a>
-            ))}
-          </div>
-
-          {/* Right Side - Hire Me Button (Original UI) */}
-          <div className="hidden md:block">
-            <a
-              href="#contact"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavClick('#contact', 'contact');
-              }}
-              className="px-6 py-2.5 bg-gray-900 text-white font-medium rounded-md hover:bg-gray-800 transition-colors duration-300 text-sm"
-            >
-              Hire Me
-            </a>
-          </div>
-
-          {/* Mobile Menu Button (Original UI) */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-              aria-label="Toggle menu"
-            >
-              <div className="w-6 space-y-1.5">
-                <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-                <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
-                <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Simple Mobile Menu (Original UI) */}
+    <>
+      {/* Contact Popup Modal */}
       <AnimatePresence>
-        {isMenuOpen && (
+        {isContactPopupOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden bg-white border-t border-gray-200 shadow-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+            onClick={() => setIsContactPopupOpen(false)}
           >
-            <div className="container mx-auto px-6 py-4">
-              <div className="flex flex-col space-y-4">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavClick(link.href, link.section);
-                    }}
-                    className="text-gray-600 hover:text-gray-900 py-2 transition-colors duration-300 border-b border-gray-100 last:border-b-0"
-                  >
-                    {link.name}
-                  </a>
-                ))}
-                <a
-                  href="#contact"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavClick('#contact', 'contact');
-                  }}
-                  className="mt-2 px-4 py-3 bg-gray-900 text-white font-medium rounded-md text-center hover:bg-gray-800 transition-colors duration-300"
-                >
-                  Hire Me
-                </a>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Floating Background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 to-purple-100/20 blur-3xl rounded-3xl -z-10"></div>
+              
+              <div className="relative rounded-3xl bg-white border border-white/80 backdrop-blur-sm 
+                            shadow-[0_30px_60px_-20px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.9)]
+                            overflow-hidden">
+                
+                {/* Header */}
+                <div className="p-6 border-b border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xl font-bold text-[#2D2D2D]">Get in Touch</h3>
+                      <p className="text-gray-500 text-sm mt-1">Choose how you'd like to contact me</p>
+                    </div>
+                    <motion.button
+                      whileHover={{ rotate: 90 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => setIsContactPopupOpen(false)}
+                      className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300"
+                    >
+                      <FaTimes className="text-gray-500" size={16} />
+                    </motion.button>
+                  </div>
+                </div>
+                
+                {/* Contact Options */}
+                <div className="p-6 space-y-3">
+                  {contactOptions.map((option, index) => (
+                    <motion.button
+                      key={option.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      whileHover={{ x: 5, scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        option.action();
+                        setIsContactPopupOpen(false);
+                      }}
+                      className="relative group w-full text-left"
+                    >
+                      {/* Floating Background */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${option.color} blur-lg rounded-xl -z-10 group-hover:blur-xl transition-all duration-300`}></div>
+                      
+                      <div className="relative p-4 rounded-xl bg-white/90 border border-white/80 backdrop-blur-sm 
+                                    shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.9)] 
+                                    group-hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15),0_0_0_1px_rgba(255,255,255,0.9)]
+                                    transition-all duration-300">
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-sm">
+                              {option.icon}
+                            </div>
+                            <div>
+                              <div className="text-sm font-semibold text-[#2D2D2D]">{option.label}</div>
+                              <div className="text-xs text-gray-500 mt-1">{option.description}</div>
+                            </div>
+                          </div>
+                          
+                          <motion.div
+                            animate={{ x: [0, 3, 0] }}
+                            transition={{ repeat: Infinity, duration: 2, delay: index * 0.3 }}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          >
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-sm">
+                              <FaArrowRight className="text-gray-500 group-hover:text-gray-700 transition-colors" size={12} />
+                            </div>
+                          </motion.div>
+                        </div>
+                      </div>
+                    </motion.button>
+                  ))}
+                </div>
+                
+                {/* Footer */}
+                <div className="p-6 border-t border-gray-100 bg-gradient-to-r from-gray-50/50 to-white/50">
+                  <p className="text-center text-sm text-gray-500">
+                    I typically respond within 24 hours
+                  </p>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+
+      <nav 
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled 
+            ? 'py-4 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm' 
+            : 'py-5 bg-white'
+        }`}
+      >
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="flex justify-between items-center">
+            
+            {/* Logo */}
+            <div className="flex items-center">
+              <a 
+                href="#home" 
+                className="text-xl sm:text-2xl font-bold text-gray-900"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick('#home', 'home');
+                }}
+              >
+                Fraol<span className="text-gray-500">.</span>
+              </a>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8 lg:space-x-10">
+              {navLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick(link.href, link.section);
+                  }}
+                  className={`text-sm font-medium transition-colors duration-300 relative group ${
+                    activeSection === link.section 
+                      ? 'text-gray-900' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {link.name}
+                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gray-900 transition-all duration-300 ${
+                    activeSection === link.section ? 'w-full' : 'w-0 group-hover:w-full'
+                  }`}></span>
+                </a>
+              ))}
+            </div>
+
+            {/* Right Side - Hire Me Button */}
+            <div className="hidden md:block">
+              <motion.button
+                onClick={() => setIsContactPopupOpen(true)}
+                whileHover={{ scale: 1.05, backgroundColor: "#1a1a1a" }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-2.5 bg-[#2D2D2D] text-white font-medium rounded-full shadow-lg shadow-gray-200 hover:shadow-gray-300 transition-all duration-300 text-sm"
+              >
+                Hire Me
+              </motion.button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+                aria-label="Toggle menu"
+              >
+                <div className="w-6 space-y-1.5">
+                  <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+                  <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+                  <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Simple Mobile Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden bg-white border-t border-gray-200 shadow-lg"
+            >
+              <div className="container mx-auto px-4 sm:px-6 py-4">
+                <div className="flex flex-col space-y-4">
+                  {navLinks.map((link) => (
+                    <a
+                      key={link.name}
+                      href={link.href}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavClick(link.href, link.section);
+                      }}
+                      className={`py-3 border-b border-gray-100 last:border-b-0 transition-colors duration-300 ${
+                        activeSection === link.section 
+                          ? 'text-gray-900 font-medium' 
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      {link.name}
+                    </a>
+                  ))}
+                  <motion.button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setIsContactPopupOpen(true);
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    className="mt-2 px-4 py-3 bg-[#2D2D2D] text-white font-medium rounded-full text-center hover:bg-gray-800 transition-colors duration-300"
+                  >
+                    Hire Me
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+    </>
   );
 };
 
