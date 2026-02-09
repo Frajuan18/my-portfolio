@@ -4,3 +4,19 @@
 body {
   font-family: 'Poppins', sans-serif;
 }
+/* Add smooth scrolling to the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure all sections are block elements */
+section {
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+/* Fix for smooth scrolling with fixed navbar */
+:target {
+  scroll-margin-top: 80px; /* Adjust based on your navbar height */
+}

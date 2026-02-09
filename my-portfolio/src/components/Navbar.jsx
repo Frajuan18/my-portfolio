@@ -8,67 +8,75 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
 
+  const navLinks = [
+    { name: 'Home', sectionId: 'home' },
+    { name: 'About', sectionId: 'about' },
+    { name: 'Experience', sectionId: 'experience' },
+    { name: 'Projects', sectionId: 'projects' },
+    { name: 'Skills', sectionId: 'skills' },
+    { name: 'Contact', sectionId: 'contact' },
+  ];
+
+  // Scroll to section function
+  const scrollToSection = (sectionId) => {
+    setIsMenuOpen(false);
+    
+    const element = document.getElementById(sectionId);
+    if (element) {
+      // Get navbar height for offset
+      const navbar = document.querySelector('nav');
+      const navbarHeight = navbar ? navbar.offsetHeight : 70;
+      
+      // Calculate the position to scroll to
+      const elementTop = element.offsetTop - navbarHeight;
+      
+      // Smooth scroll
+      window.scrollTo({
+        top: elementTop,
+        behavior: 'smooth'
+      });
+      
+      // Update active section
+      setActiveSection(sectionId);
+    }
+  };
+
+  // Scroll detection for active section
   useEffect(() => {
     const handleScroll = () => {
+      // Check if scrolled
       setScrolled(window.scrollY > 10);
       
-      // Update active section based on scroll position
-      const sections = ['home', 'about', 'experience', 'projects', 'skills', 'contact'];
+      // Find active section
+      const sections = navLinks.map(link => link.sectionId);
+      const scrollPosition = window.scrollY + 100; // Offset for better detection
       
-      // Get current scroll position
-      const scrollPosition = window.scrollY + 100; // Add offset for navbar height
+      let currentSection = 'home';
       
-      for (const section of sections) {
-        const element = document.getElementById(section);
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId);
         if (element) {
           const sectionTop = element.offsetTop;
-          const sectionHeight = element.clientHeight;
+          const sectionBottom = sectionTop + element.offsetHeight;
           
-          if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-            setActiveSection(section);
+          if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+            currentSection = sectionId;
             break;
           }
         }
       }
+      
+      setActiveSection(currentSection);
     };
     
     window.addEventListener('scroll', handleScroll);
-    // Initial check
+    // Call once to set initial state
     handleScroll();
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { name: 'Home', href: '#home', section: 'home' },
-    { name: 'About', href: '#about', section: 'about' },
-    { name: 'Experience', href: '#experience', section: 'experience' },
-    { name: 'Projects', href: '#projects', section: 'projects' },
-    { name: 'Skills', href: '#skills', section: 'skills' },
-    { name: 'Contact', href: '#contact', section: 'contact' },
-  ];
-
-  const handleNavClick = (href, section) => {
-    setIsMenuOpen(false);
-    setActiveSection(section);
-    
-    const element = document.getElementById(section);
-    if (element) {
-      // Calculate offset for navbar height
-      const navbarHeight = 80; // Approximate navbar height
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
-      
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-      
-      // Update URL hash without scrolling
-      window.history.pushState(null, null, href);
-    }
-  };
-
+  // Contact options
   const contactOptions = [
     {
       id: "email",
@@ -210,6 +218,7 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
+      {/* Navbar */}
       <nav 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled 
@@ -217,40 +226,32 @@ const Navbar = () => {
             : 'py-5 bg-white'
         }`}
       >
-        <div className="container mx-auto px-4 sm:px-6">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-20">
           <div className="flex justify-between items-center">
             
             {/* Logo */}
-            <div className="flex items-center">
-              <button 
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick('#home', 'home');
-                }}
-                className="text-xl sm:text-2xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
-              >
-                Fraol<span className="text-gray-500">.</span>
-              </button>
-            </div>
+            <button 
+              onClick={() => scrollToSection('home')}
+              className="text-xl sm:text-2xl font-bold text-[#2D2D2D] hover:text-gray-700 transition-colors"
+            >
+              Fraol<span className="text-gray-500">.</span>
+            </button>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8 lg:space-x-10">
               {navLinks.map((link) => (
                 <button
-                  key={link.name}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavClick(link.href, link.section);
-                  }}
+                  key={link.sectionId}
+                  onClick={() => scrollToSection(link.sectionId)}
                   className={`text-sm font-medium transition-colors duration-300 relative group ${
-                    activeSection === link.section 
-                      ? 'text-gray-900' 
-                      : 'text-gray-600 hover:text-gray-900'
+                    activeSection === link.sectionId 
+                      ? 'text-[#2D2D2D] font-semibold' 
+                      : 'text-gray-600 hover:text-[#2D2D2D]'
                   }`}
                 >
                   {link.name}
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gray-900 transition-all duration-300 ${
-                    activeSection === link.section ? 'w-full' : 'w-0 group-hover:w-full'
+                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-[#2D2D2D] transition-all duration-300 ${
+                    activeSection === link.sectionId ? 'w-full' : 'w-0 group-hover:w-full'
                   }`}></span>
                 </button>
               ))}
@@ -272,7 +273,7 @@ const Navbar = () => {
             <div className="md:hidden">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-gray-600 hover:text-gray-900 transition-colors p-2"
                 aria-label="Toggle menu"
               >
                 <div className="w-6 space-y-1.5">
@@ -285,7 +286,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Simple Mobile Menu */}
+        {/* Mobile Menu */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -299,15 +300,12 @@ const Navbar = () => {
                 <div className="flex flex-col space-y-4">
                   {navLinks.map((link) => (
                     <button
-                      key={link.name}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavClick(link.href, link.section);
-                      }}
-                      className={`py-3 border-b border-gray-100 last:border-b-0 transition-colors duration-300 text-left ${
-                        activeSection === link.section 
-                          ? 'text-gray-900 font-medium' 
-                          : 'text-gray-600 hover:text-gray-900'
+                      key={link.sectionId}
+                      onClick={() => scrollToSection(link.sectionId)}
+                      className={`py-3 text-left border-b border-gray-100 last:border-b-0 transition-colors duration-300 ${
+                        activeSection === link.sectionId 
+                          ? 'text-[#2D2D2D] font-semibold' 
+                          : 'text-gray-600 hover:text-[#2D2D2D]'
                       }`}
                     >
                       {link.name}

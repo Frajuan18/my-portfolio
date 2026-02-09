@@ -180,7 +180,7 @@ const Hero = () => {
         )}
       </AnimatePresence>
 
-      <section className="relative min-h-screen bg-[#FDFDFD] flex items-center overflow-hidden pt-20" style={{ fontFamily: "'Poppins', sans-serif" }}>
+      <section id="home" className="relative min-h-screen bg-[#FDFDFD] flex items-center overflow-hidden pt-20" style={{ fontFamily: "'Poppins', sans-serif" }}>
         <style>
           {`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;900&display=swap');`}
         </style>

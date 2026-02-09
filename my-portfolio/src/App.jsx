@@ -11,15 +11,15 @@ import Footer from './components/Footer';
 
 function App() {
   return (
-    <div className="min-h-screen">
+    <div className="App">
       <Navbar />
-      <Hero/>
-      <About/>
-      <Skills/>
-      <Projects/>
-      <Experience/>
-      <Contact/>
-      <Footer/>
+      <Hero />
+      <About />
+      <Experience />
+      <Projects />
+      <Skills />
+      <Contact />
+      <Footer />
     </div>
   );
 }
