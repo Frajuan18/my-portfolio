@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaEnvelope, FaTelegram, FaInstagram, FaGoogle, FaArrowRight, FaTimes } from 'react-icons/fa';
+import { FaEnvelope, FaTelegram, FaInstagram, FaGoogle, FaArrowRight, FaTimes, FaBars } from 'react-icons/fa';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isContactPopupOpen, setIsContactPopupOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const navbarRef = useRef(null);
 
   const navLinks = [
     { name: 'Home', sectionId: 'home' },
@@ -17,22 +18,25 @@ const Navbar = () => {
     { name: 'Contact', sectionId: 'contact' },
   ];
 
-  // Scroll to section function
+  // Scroll to section function - FIXED FOR MOBILE
   const scrollToSection = (sectionId) => {
     setIsMenuOpen(false);
     
     const element = document.getElementById(sectionId);
     if (element) {
-      // Get navbar height for offset
-      const navbar = document.querySelector('nav');
-      const navbarHeight = navbar ? navbar.offsetHeight : 70;
+      // Get navbar height
+      let navbarHeight = 70; // default
+      if (navbarRef.current) {
+        navbarHeight = navbarRef.current.offsetHeight;
+      }
       
-      // Calculate the position to scroll to
-      const elementTop = element.offsetTop - navbarHeight;
+      // Calculate position
+      const elementTop = element.offsetTop;
+      const offsetPosition = elementTop - navbarHeight;
       
       // Smooth scroll
       window.scrollTo({
-        top: elementTop,
+        top: offsetPosition,
         behavior: 'smooth'
       });
       
@@ -44,39 +48,66 @@ const Navbar = () => {
   // Scroll detection for active section
   useEffect(() => {
     const handleScroll = () => {
-      // Check if scrolled
       setScrolled(window.scrollY > 10);
       
-      // Find active section
       const sections = navLinks.map(link => link.sectionId);
-      const scrollPosition = window.scrollY + 100; // Offset for better detection
+      const scrollPosition = window.scrollY + 100;
       
-      let currentSection = 'home';
+      let current = 'home';
       
       for (const sectionId of sections) {
         const element = document.getElementById(sectionId);
         if (element) {
-          const sectionTop = element.offsetTop;
-          const sectionBottom = sectionTop + element.offsetHeight;
+          const { top, bottom } = element.getBoundingClientRect();
+          const elementTop = top + window.scrollY;
+          const elementBottom = bottom + window.scrollY;
           
-          if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-            currentSection = sectionId;
+          if (scrollPosition >= elementTop && scrollPosition <= elementBottom) {
+            current = sectionId;
             break;
           }
         }
       }
       
-      setActiveSection(currentSection);
+      setActiveSection(current);
     };
     
-    window.addEventListener('scroll', handleScroll);
-    // Call once to set initial state
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Contact options
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMenuOpen && navbarRef.current && !navbarRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
   const contactOptions = [
     {
       id: "email",
@@ -131,14 +162,12 @@ const Navbar = () => {
               className="relative w-full max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Floating Background */}
               <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 to-purple-100/20 blur-3xl rounded-3xl -z-10"></div>
               
               <div className="relative rounded-3xl bg-white border border-white/80 backdrop-blur-sm 
                             shadow-[0_30px_60px_-20px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.9)]
                             overflow-hidden">
                 
-                {/* Header */}
                 <div className="p-6 border-b border-gray-100">
                   <div className="flex items-center justify-between">
                     <div>
@@ -156,7 +185,6 @@ const Navbar = () => {
                   </div>
                 </div>
                 
-                {/* Contact Options */}
                 <div className="p-6 space-y-3">
                   {contactOptions.map((option, index) => (
                     <motion.button
@@ -172,7 +200,6 @@ const Navbar = () => {
                       }}
                       className="relative group w-full text-left"
                     >
-                      {/* Floating Background */}
                       <div className={`absolute inset-0 bg-gradient-to-br ${option.color} blur-lg rounded-xl -z-10 group-hover:blur-xl transition-all duration-300`}></div>
                       
                       <div className="relative p-4 rounded-xl bg-white/90 border border-white/80 backdrop-blur-sm 
@@ -206,7 +233,6 @@ const Navbar = () => {
                   ))}
                 </div>
                 
-                {/* Footer */}
                 <div className="p-6 border-t border-gray-100 bg-gradient-to-r from-gray-50/50 to-white/50">
                   <p className="text-center text-sm text-gray-500">
                     I typically respond within 24 hours
@@ -220,6 +246,7 @@ const Navbar = () => {
 
       {/* Navbar */}
       <nav 
+        ref={navbarRef}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled 
             ? 'py-4 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm' 
@@ -232,7 +259,7 @@ const Navbar = () => {
             {/* Logo */}
             <button 
               onClick={() => scrollToSection('home')}
-              className="text-xl sm:text-2xl font-bold text-[#2D2D2D] hover:text-gray-700 transition-colors"
+              className="text-xl sm:text-2xl font-bold text-[#2D2D2D] hover:text-gray-700 transition-colors flex items-center"
             >
               Fraol<span className="text-gray-500">.</span>
             </button>
@@ -257,7 +284,7 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Right Side - Hire Me Button */}
+            {/* Desktop Hire Me Button */}
             <div className="hidden md:block">
               <motion.button
                 onClick={() => setIsContactPopupOpen(true)}
@@ -276,53 +303,97 @@ const Navbar = () => {
                 className="text-gray-600 hover:text-gray-900 transition-colors p-2"
                 aria-label="Toggle menu"
               >
-                <div className="w-6 space-y-1.5">
-                  <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-                  <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
-                  <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-                </div>
+                <FaBars size={24} />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - FIXED POSITION */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden bg-white border-t border-gray-200 shadow-lg"
+              initial={{ opacity: 0, x: '100%' }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="md:hidden fixed inset-0 bg-white z-50 pt-20"
             >
-              <div className="container mx-auto px-4 sm:px-6 py-4">
-                <div className="flex flex-col space-y-4">
+              {/* Mobile Menu Content */}
+              <div className="h-full overflow-y-auto px-6 pb-6">
+                <div className="flex flex-col space-y-2">
                   {navLinks.map((link) => (
                     <button
                       key={link.sectionId}
                       onClick={() => scrollToSection(link.sectionId)}
-                      className={`py-3 text-left border-b border-gray-100 last:border-b-0 transition-colors duration-300 ${
+                      className={`py-4 text-left border-b border-gray-100 last:border-b-0 transition-colors duration-300 flex items-center justify-between ${
                         activeSection === link.sectionId 
                           ? 'text-[#2D2D2D] font-semibold' 
                           : 'text-gray-600 hover:text-[#2D2D2D]'
                       }`}
                     >
-                      {link.name}
+                      <span className="text-lg">{link.name}</span>
+                      <FaArrowRight className={`transform transition-transform ${activeSection === link.sectionId ? 'rotate-0' : '-rotate-45'}`} size={16} />
                     </button>
                   ))}
+                  
+                  {/* Mobile Hire Me Button */}
                   <motion.button
                     onClick={() => {
                       setIsMenuOpen(false);
                       setIsContactPopupOpen(true);
                     }}
                     whileTap={{ scale: 0.98 }}
-                    className="mt-2 px-4 py-3 bg-[#2D2D2D] text-white font-medium rounded-full text-center hover:bg-gray-800 transition-colors duration-300"
+                    className="mt-6 px-6 py-4 bg-[#2D2D2D] text-white font-medium rounded-xl text-center hover:bg-gray-800 transition-colors duration-300 text-lg w-full"
                   >
                     Hire Me
                   </motion.button>
+                  
+                  {/* Mobile Contact Info */}
+                  <div className="mt-8 pt-6 border-t border-gray-200">
+                    <h4 className="text-sm font-medium text-gray-500 mb-4">Contact Me</h4>
+                    <div className="flex justify-center space-x-6">
+                      <button
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          window.location.href = "mailto:fraolabmas@gmail.com";
+                        }}
+                        className="w-12 h-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300"
+                      >
+                        <FaEnvelope className="text-gray-500 hover:text-gray-700" size={18} />
+                      </button>
+                      
+                      <button
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          window.open("https://t.me/Fra_juan", "_blank");
+                        }}
+                        className="w-12 h-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300"
+                      >
+                        <FaTelegram className="text-gray-500 hover:text-[#0088cc]" size={20} />
+                      </button>
+                      
+                      <button
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          window.open("https://instagram.com/fres.h925", "_blank");
+                        }}
+                        className="w-12 h-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300"
+                      >
+                        <FaInstagram className="text-gray-500 hover:text-[#E4405F]" size={20} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
+              
+              {/* Close Button for Mobile Menu */}
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 p-2"
+              >
+                <FaTimes size={24} />
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
