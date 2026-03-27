@@ -1,62 +1,95 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { 
   FaFigma, FaReact, FaPalette, FaCode, 
-  FaLightbulb, FaTools, FaDatabase, FaServer,
-  FaArrowRight, FaNodeJs, FaFigmaSquare
+  FaDatabase, FaArrowRight, FaNodeJs,
+  FaRocket, FaStar, FaGem,
+  FaMagic, FaCrown, FaInfinity,
+  FaPencilRuler, FaLaptopCode, FaRegLightbulb,
+  FaCloudUploadAlt
 } from 'react-icons/fa';
-import { SiNextdotjs, SiTailwindcss, SiFirebase, SiMongodb, SiSupabase } from 'react-icons/si';
+import { SiNextdotjs, SiTailwindcss, SiFirebase, SiMongodb } from 'react-icons/si';
+
+// --- ANIMATION VARIANTS (High-end reveal & floats) ---
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.8, ease: [0.215, 0.61, 0.355, 1] }
+  })
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+  }
+};
+
+const float = {
+  initial: { y: 0 },
+  animate: (i = 0) => ({
+    y: [0, -12, 0],
+    transition: {
+      duration: 5 + i,
+      repeat: Infinity,
+      ease: "easeInOut",
+      delay: i * 0.5
+    }
+  })
+};
 
 const Skills = () => {
   const skillsData = [
     {
       category: "Full Stack Development",
-      icon: <FaCode className="text-blue-500" size={22} />,
+      icon: <FaCode className="text-white/80" size={22} />,
+      gradient: "from-blue-500/20 to-cyan-500/20",
       skills: [
-        { name: "React.js", level: 90 },
-        { name: "Next.js", level: 85 },
-        { name: "Node.js", level: 82 },
-        { name: "TypeScript", level: 80 },
-        { name: "API Development", level: 85 }
+        { name: "React.js", level: 90, color: "#60a5fa" },
+        { name: "Next.js", level: 85, color: "#ffffff" },
+        { name: "Node.js", level: 82, color: "#6ee7b7" },
+        { name: "TypeScript", level: 80, color: "#60a5fa" },
+        { name: "API Development", level: 85, color: "#c084fc" }
       ]
     },
     {
       category: "UI/UX Design",
-      icon: <FaPalette className="text-purple-500" size={22} />,
+      icon: <FaPalette className="text-white/80" size={22} />,
+      gradient: "from-pink-500/20 to-purple-500/20",
       skills: [
-        { name: "Figma", level: 92 },
-        { name: "User Research", level: 85 },
-        { name: "Wireframing", level: 88 },
-        { name: "Prototyping", level: 90 },
-        { name: "Design Systems", level: 85 }
+        { name: "Figma", level: 92, color: "#f472b6" },
+        { name: "User Research", level: 85, color: "#c084fc" },
+        { name: "Wireframing", level: 88, color: "#a78bfa" },
+        { name: "Prototyping", level: 90, color: "#f87171" },
+        { name: "Design Systems", level: 85, color: "#c084fc" }
       ]
     },
     {
       category: "Database & Backend",
-      icon: <FaDatabase className="text-emerald-500" size={22} />,
+      icon: <FaDatabase className="text-white/80" size={22} />,
+      gradient: "from-emerald-500/20 to-teal-500/20",
       skills: [
-        { name: "MongoDB", level: 85 },
-        { name: "Firebase", level: 88 },
-        { name: "Supabase", level: 82 },
-        { name: "REST APIs", level: 87 },
-        { name: "Database Design", level: 83 }
+        { name: "MongoDB", level: 85, color: "#6ee7b7" },
+        { name: "Firebase", level: 88, color: "#fbbf24" },
+        { name: "Supabase", level: 82, color: "#3ecf8e" },
+        { name: "REST APIs", level: 85, color: "#c084fc" },
+        { name: "Database Design", level: 83, color: "#60a5fa" }
       ]
     }
   ];
 
-  const techStack = [
-    { name: "React", icon: <FaReact className="text-cyan-500" />, color: "from-cyan-100 to-cyan-50" },
-    { name: "Next.js", icon: <SiNextdotjs className="text-gray-700" />, color: "from-gray-100 to-gray-50" },
-    { name: "Node.js", icon: <FaNodeJs className="text-green-500" />, color: "from-green-100 to-green-50" },
-    { name: "TypeScript", icon: <FaCode className="text-blue-500" />, color: "from-blue-100 to-blue-50" },
-    { name: "Tailwind", icon: <SiTailwindcss className="text-teal-500" />, color: "from-teal-100 to-teal-50" },
-    { name: "MongoDB", icon: <SiMongodb className="text-green-600" />, color: "from-emerald-100 to-emerald-50" },
-    { name: "Firebase", icon: <SiFirebase className="text-amber-500" />, color: "from-amber-100 to-amber-50" },
-    { name: "Supabase", icon: <SiSupabase className="text-sky-500" />, color: "from-sky-100 to-sky-50" },
-    { name: "Figma", icon: <FaFigma className="text-pink-500" />, color: "from-pink-100 to-pink-50" },
-    { name: "Framer", icon: <FaCode className="text-rose-500" />, color: "from-rose-100 to-rose-50" },
-    { name: "Webflow", icon: <FaCode className="text-purple-500" />, color: "from-purple-100 to-purple-50" },
-    { name: "HTML/CSS", icon: <FaCode className="text-orange-500" />, color: "from-orange-100 to-orange-50" }
+  const designTools = [
+    { number: "01", name: "Figma", description: "Design projects and assets for a standout UX/UI portfolio.", icon: <FaFigma className="text-pink-400" size={26} />, gradient: "from-pink-500/40 to-rose-500/40" },
+    { number: "02", name: "React", description: "Building dynamic and responsive user interfaces with modern React.", icon: <FaReact className="text-cyan-400" size={26} />, gradient: "from-cyan-500/40 to-blue-500/40" },
+    { number: "03", name: "Next.js", description: "Server-side rendering and static site generation for performance.", icon: <SiNextdotjs className="text-white" size={24} />, gradient: "from-gray-400/30 to-gray-600/30" },
+    { number: "04", name: "Node.js", description: "Scalable backend services and API development.", icon: <FaNodeJs className="text-emerald-400" size={26} />, gradient: "from-emerald-500/40 to-green-500/40" },
+    { number: "05", name: "TypeScript", description: "Type-safe code for better maintainability and DX.", icon: <FaCode className="text-blue-400" size={26} />, gradient: "from-blue-500/40 to-indigo-500/40" },
+    { number: "06", name: "Tailwind CSS", description: "Utility-first CSS framework for rapid UI development.", icon: <SiTailwindcss className="text-teal-400" size={26} />, gradient: "from-teal-500/40 to-cyan-500/40" },
+    { number: "07", name: "MongoDB", description: "NoSQL database for flexible and scalable data storage.", icon: <SiMongodb className="text-green-400" size={26} />, gradient: "from-green-500/40 to-lime-500/40" },
+    { number: "08", name: "Firebase", description: "Real-time database and authentication solutions.", icon: <SiFirebase className="text-amber-400" size={26} />, gradient: "from-amber-500/40 to-orange-500/40" }
   ];
 
   const calculateAverage = (skills) => {
@@ -64,290 +97,206 @@ const Skills = () => {
     return Math.round(total / skills.length);
   };
 
+  const TiltCard = ({ children, className, ...props }) => {
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+    const rotateX = useTransform(y, [-100, 100], [10, -10]);
+    const rotateY = useTransform(x, [-100, 100], [-10, 10]);
+    const springConfig = { damping: 25, stiffness: 300 };
+    const rotateXSpring = useSpring(rotateX, springConfig);
+    const rotateYSpring = useSpring(rotateY, springConfig);
+    
+    const handleMouseMove = (e) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const xPercent = (e.clientX - rect.left) / rect.width - 0.5;
+      const yPercent = (e.clientY - rect.top) / rect.height - 0.5;
+      x.set(xPercent * 150);
+      y.set(yPercent * 150);
+    };
+    
+    const handleMouseLeave = () => {
+      x.set(0);
+      y.set(0);
+    };
+    
+    return (
+      <motion.div
+        style={{ rotateX: rotateXSpring, rotateY: rotateYSpring, transformStyle: "preserve-3d" }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className={className}
+        {...props}
+      >
+        {children}
+      </motion.div>
+    );
+  };
+
+  const GlowingCircle = ({ size, top, left, delay, duration, color }) => (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: [0.2, 0.4, 0.2], scale: [1, 1.1, 1] }}
+      transition={{ duration, repeat: Infinity, delay, ease: "easeInOut" }}
+      className="absolute rounded-full blur-[100px]"
+      style={{ width: size, height: size, top, left, background: color }}
+    />
+  );
+
   return (
-    <section id="skills" className="relative py-20 md:py-32 bg-[#FDFDFD] overflow-hidden">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-20">
+    <section id='#skills' className="relative w-full min-h-screen bg-[#050505] py-20 md:py-28 overflow-hidden text-white">
+      
+      {/* Dynamic Animated Background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <GlowingCircle size="600px" top="-10%" left="-10%" delay={0} duration={8} color="rgba(255,255,255,0.08)" />
+        <GlowingCircle size="500px" top="40%" left="60%" delay={2} duration={10} color="rgba(100,150,255,0.1)" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      </div>
+
+      <div className="relative w-full max-w-7xl mx-auto px-6 z-10">
         
-        {/* Header - Matching Hero Style */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+        {/* Header - Staggered In-View Animation */}
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="max-w-4xl mx-auto mb-12 md:mb-20"
+          variants={staggerContainer}
+          className="text-center mb-20"
         >
-          <div className="space-y-3">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-700">My Expertise</h3>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#2D2D2D] uppercase tracking-tighter leading-none">
-              Skills & 
-              <span className="block mt-1 sm:mt-2">Tech Stack</span>
-            </h2>
-            <p className="text-gray-500 text-base sm:text-lg leading-relaxed max-w-lg font-normal mt-4 md:mt-6">
-              2 years of mastering modern web technologies and design tools to build exceptional digital products.
-            </p>
-          </div>
+          <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-md">
+            <span className="text-xs font-bold tracking-[0.2em] text-white/60 uppercase">The Arsenal</span>
+            <motion.span animate={{ rotate: [0, 15, -15, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+              <FaMagic className="text-white/40" size={12} />
+            </motion.span>
+          </motion.div>
+
+          <motion.h1 variants={fadeInUp} className="text-5xl md:text-7xl font-bold tracking-tighter mb-6" style={{ fontFamily: "'Revalia', cursive" }}>
+            Skills & <span className="text-white/40">Tech Stack</span>
+          </motion.h1>
+
+          <motion.p variants={fadeInUp} className="text-gray-400 max-w-xl mx-auto">
+            ✦ Turning complex logic into elegant, high-performance digital experiences ✦
+          </motion.p>
         </motion.div>
 
-        {/* Floating Stats Cards - Consistent numbers */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12 md:mb-16 max-w-3xl mx-auto"
-        >
-          {[
-            { value: "2+", label: "Years Experience", color: "from-blue-100 to-blue-50" },
-            { value: "20+", label: "Projects Completed", color: "from-purple-100 to-purple-50" },
-            { value: "98%", label: "Satisfaction Rate", color: "from-emerald-100 to-emerald-50" }
-          ].map((stat, index) => (
+        {/* Glassmorphic Stats - Floating Motion */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
+          {[{ value: "2+", label: "Years Exp" }, { value: "20+", label: "Projects" }, { value: "100%", label: "Precision" }].map((stat, i) => (
             <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -6, scale: 1.02 }}
-              className="relative group cursor-pointer"
+              key={i}
+              variants={float}
+              initial="initial"
+              animate="animate"
+              custom={i}
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} blur-xl rounded-2xl -z-10 group-hover:blur-2xl transition-all duration-300`}></div>
-              
-              <div className="relative p-4 md:p-6 rounded-xl md:rounded-2xl bg-white border border-white/80 backdrop-blur-sm 
-                            shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.9)] 
-                            group-hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15),0_0_0_1px_rgba(255,255,255,0.9)]
-                            transition-all duration-300 text-center">
-                <p className="text-2xl md:text-3xl font-bold text-[#2D2D2D] mb-1 md:mb-2">{stat.value}</p>
-                <p className="text-xs md:text-sm text-gray-500">{stat.label}</p>
-              </div>
+              <TiltCard className="group relative h-full">
+                <div className="relative h-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-8 transition-all hover:border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.05)]">
+                   <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                   <h2 className="text-4xl font-bold mb-1" style={{ fontFamily: "'Revalia', cursive" }}>{stat.value}</h2>
+                   <p className="text-sm uppercase tracking-widest text-gray-500">{stat.label}</p>
+                </div>
+              </TiltCard>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Main Skills Grid - Reveal from bottom */}
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={staggerContainer}
+          className="grid md:grid-cols-3 gap-8 mb-24"
+        >
+          {skillsData.map((category, idx) => {
+            const avg = calculateAverage(category.skills);
+            return (
+              <motion.div key={idx} variants={fadeInUp} custom={idx}>
+                <TiltCard>
+                  <div className="group relative h-full rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-2xl p-8 hover:bg-white/[0.06] hover:border-white/20 transition-all duration-500 overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.1)]">
+                    
+                    {/* Glowing Sheen Swish on Hover */}
+                    <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent rotate-45 pointer-events-none" />
+                    
+                    <div className="flex items-center justify-between mb-8">
+                      <div className="flex items-center gap-4">
+                        <motion.div 
+                          whileHover={{ rotate: 360, scale: 1.1 }}
+                          transition={{ type: "spring", stiffness: 200 }}
+                          className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-lg"
+                        >
+                          {category.icon}
+                        </motion.div>
+                        <h3 className="text-lg font-bold" style={{ fontFamily: "'Revalia', cursive" }}>{category.category}</h3>
+                      </div>
+                      <span className="text-xs font-black text-white/40">{avg}%</span>
+                    </div>
+
+                    <div className="space-y-6">
+                      {category.skills.map((skill, sIdx) => (
+                        <div key={sIdx}>
+                          <div className="flex justify-between text-xs mb-2 text-gray-400 font-medium">
+                            <span>{skill.name}</span>
+                            <span>{skill.level}%</span>
+                          </div>
+                          <div className="h-[3px] w-full bg-white/5 rounded-full overflow-hidden">
+                            <motion.div 
+                              initial={{ width: 0 }} 
+                              whileInView={{ width: `${skill.level}%` }} 
+                              viewport={{ once: true }}
+                              transition={{ duration: 1.5, delay: sIdx * 0.1, ease: "circOut" }}
+                              className="h-full bg-white/40"
+                              style={{ boxShadow: `0 0 10px ${skill.color}50` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </TiltCard>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        {/* Tools Grid - Stagger Pop and Tilt */}
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24"
+        >
+          {designTools.map((tool, i) => (
+            <motion.div key={i} variants={fadeInUp} custom={i}>
+              <TiltCard>
+                <div className="group relative h-full rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-md p-6 hover:bg-white/[0.05] hover:border-white/20 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+                  <div className="text-2xl font-black text-white/10 mb-4 group-hover:text-white/20 transition-colors" style={{ fontFamily: "'Revalia', cursive" }}>{tool.number}</div>
+                  <motion.div whileHover={{ scale: 1.2, rotate: 10 }} transition={{ type: "spring" }} className="mb-4 inline-block">
+                    {tool.icon}
+                  </motion.div>
+                  <h4 className="text-sm font-bold mb-2">{tool.name}</h4>
+                  <p className="text-[11px] text-gray-500 leading-relaxed">{tool.description}</p>
+                </div>
+              </TiltCard>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* Skills Grid - Clean No Progress Bars */}
-        <div className="grid lg:grid-cols-3 gap-6 md:gap-8 mb-16 md:mb-24">
-          {skillsData.map((categoryData, categoryIndex) => {
-            const average = calculateAverage(categoryData.skills);
-            
-            return (
-              <motion.div
-                key={categoryIndex}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: categoryIndex * 0.2 }}
-                className="relative group"
-              >
-                {/* Floating Category Card */}
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-100/20 to-gray-50/10 blur-xl rounded-2xl md:rounded-3xl -z-10 group-hover:blur-2xl transition-all duration-300"></div>
-                
-                <div className="relative p-6 md:p-8 rounded-2xl md:rounded-3xl bg-white border border-white/80 backdrop-blur-sm 
-                              shadow-[0_15px_40px_-15px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.9)]
-                              hover:shadow-[0_25px_50px_-15px_rgba(0,0,0,0.15),0_0_0_1px_rgba(255,255,255,0.9)]
-                              transition-all duration-300">
-                  
-                  {/* Category Header */}
-                  <div className="flex items-center justify-between mb-6 md:mb-8">
-                    <div className="flex items-center gap-3 md:gap-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-sm">
-                        {categoryData.icon}
-                      </div>
-                      <div>
-                        <h3 className="text-lg md:text-xl font-bold text-[#2D2D2D]">{categoryData.category}</h3>
-                        <p className="text-sm text-gray-400 mt-0.5">Professional skills</p>
-                      </div>
-                    </div>
-                    
-                    {/* Average Score Badge */}
-                    <div className="relative">
-                      <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
-                        <span className="text-base md:text-xl font-bold text-white">{average}%</span>
-                      </div>
-                      <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
-                    </div>
-                  </div>
-                  
-                  {/* Clean Skills List - No Progress Bars */}
-                  <div className="space-y-3 md:space-y-4">
-                    {categoryData.skills.map((skill, skillIndex) => (
-                      <motion.div
-                        key={skillIndex}
-                        initial={{ opacity: 0, x: -15 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: skillIndex * 0.1 + categoryIndex * 0.2 }}
-                        whileHover={{ x: 3 }}
-                        className="group/skill"
-                      >
-                        <div className="flex items-center justify-between p-3 md:p-3 rounded-lg md:rounded-xl bg-gradient-to-r from-gray-50/50 to-white/50 hover:from-gray-100/50 hover:to-white transition-all duration-300 border border-white/80">
-                          <div className="flex items-center gap-2 md:gap-3">
-                            {/* Skill Level Indicator Dot */}
-                            <div className="relative">
-                              <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${
-                                skill.level >= 90 ? 'bg-emerald-500' :
-                                skill.level >= 80 ? 'bg-blue-500' :
-                                skill.level >= 70 ? 'bg-purple-500' :
-                                'bg-gray-400'
-                              }`}></div>
-                              <div className={`absolute inset-0 rounded-full animate-ping ${
-                                skill.level >= 90 ? 'bg-emerald-500' :
-                                skill.level >= 80 ? 'bg-blue-500' :
-                                skill.level >= 70 ? 'bg-purple-500' :
-                                'bg-gray-400'
-                              } opacity-20`}></div>
-                            </div>
-                            
-                            <span className="text-gray-700 text-sm md:text-base font-medium">{skill.name}</span>
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-gray-800">{skill.level}%</span>
-                            <motion.div
-                              initial={{ opacity: 0, x: -5 }}
-                              whileHover={{ opacity: 1, x: 0 }}
-                              className="opacity-0 group-hover/skill:opacity-100 transition-all duration-300"
-                            >
-                              <FaArrowRight className="text-gray-400" size={10} />
-                            </motion.div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Tech Stack - Floating Cards */}
-        <div className="mb-16 md:mb-24">
-          <div className="mb-6 md:mb-10">
-            <h3 className="text-xl md:text-2xl font-bold text-[#2D2D2D] mb-2">Tech & Tools Stack</h3>
-            <p className="text-gray-400 text-sm">Technologies I use daily for development & design</p>
-          </div>
-          
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-3 md:gap-4">
-            {techStack.map((tech, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8, y: 15 }}
-                whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.03 }}
-                whileHover={{ 
-                  y: -5, 
-                  scale: 1.05,
-                  rotate: [0, -3, 3, 0]
-                }}
-                className="relative group cursor-pointer"
-              >
-                {/* Floating Background */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${tech.color} blur-lg rounded-lg md:rounded-xl -z-10 group-hover:blur-xl transition-all duration-300`}></div>
-                
-                <div className="relative aspect-square bg-white/90 border border-white/80 backdrop-blur-sm rounded-lg md:rounded-xl 
-                              shadow-[0_10px_25px_-10px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.9)]
-                              group-hover:shadow-[0_15px_35px_-10px_rgba(0,0,0,0.15),0_0_0_1px_rgba(255,255,255,0.9)]
-                              transition-all duration-300 flex flex-col items-center justify-center p-2 md:p-3">
-                  
-                  {/* Icon */}
-                  <div className="text-xl md:text-2xl mb-1 md:mb-2 group-hover:scale-110 transition-transform">
-                    {tech.icon}
-                  </div>
-                  
-                  <div className="text-center">
-                    <div className="text-xs md:text-sm font-medium text-[#2D2D2D]">{tech.name}</div>
-                    <div className="text-xs text-gray-500 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                      Proficient
-                    </div>
-                  </div>
-                  
-                  {/* Glow Effect */}
-                  <div className="absolute inset-0 rounded-lg md:rounded-xl bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Development Process - Floating Steps */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+        {/* CTA Banner - Glow and Pulse */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="relative mb-16 md:mb-24"
+          transition={{ duration: 0.6 }}
+          className="text-center pt-12 border-t border-white/5"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-100/10 to-purple-100/10 blur-xl -z-10 rounded-full"></div>
           
-          <div className="relative p-6 md:p-8 lg:p-10 rounded-2xl md:rounded-3xl bg-gradient-to-br from-white to-white/80 border border-white/80 backdrop-blur-sm
-                        shadow-[0_20px_50px_-20px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.9)]">
-            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#2D2D2D] mb-6 md:mb-10 text-center">Development Process</h3>
-            
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-              {[
-                { number: "01", title: "Planning", desc: "Requirements analysis and project architecture", color: "from-blue-100 to-blue-50" },
-                { number: "02", title: "Design", desc: "UI/UX design and user flow mapping", color: "from-purple-100 to-purple-50" },
-                { number: "03", title: "Development", desc: "Coding, testing, and feature implementation", color: "from-emerald-100 to-emerald-50" },
-                { number: "04", title: "Deployment", desc: "Launch, monitoring, and maintenance", color: "from-amber-100 to-amber-50" }
-              ].map((step, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -3 }}
-                  className="relative text-center group cursor-pointer"
-                >
-                  {/* Floating Step Background */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${step.color} blur-lg md:blur-xl rounded-lg md:rounded-xl -z-10 group-hover:blur-xl md:group-hover:blur-2xl transition-all duration-300`}></div>
-                  
-                  <div className="relative p-4 md:p-6 rounded-lg md:rounded-xl bg-white/90 border border-white/80 backdrop-blur-sm
-                                shadow-[0_10px_25px_-10px_rgba(0,0,0,0.08),0_0_0_1px_rgba(255,255,255,0.9)]
-                                group-hover:shadow-[0_15px_35px_-10px_rgba(0,0,0,0.12),0_0_0_1px_rgba(255,255,255,0.9)]
-                                transition-all duration-300">
-                    
-                    {/* Step Number */}
-                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center mx-auto mb-3 md:mb-4">
-                      <span className="text-base md:text-lg font-bold text-white">{step.number}</span>
-                    </div>
-                    
-                    <div className="text-sm md:text-base font-semibold text-[#2D2D2D] mb-1 md:mb-2">{step.title}</div>
-                    <p className="text-gray-600 text-xs leading-relaxed">{step.desc}</p>
-                    
-                    {/* Connector Line */}
-                    {index < 3 && (
-                      <div className="hidden lg:block absolute top-1/2 -right-4 w-4 md:w-8 h-0.5 bg-gradient-to-r from-gray-200 to-transparent"></div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Call to Action - Hero Style */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="text-center"
-        >
-          <motion.a 
-            href="#contact"
-            whileHover={{ scale: 1.05, backgroundColor: "#1a1a1a" }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-3 px-8 py-4 md:px-10 md:py-5 bg-[#2D2D2D] text-white font-semibold rounded-full 
-                      shadow-[0_15px_30px_-10px_rgba(0,0,0,0.2)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.25)]
-                      transition-all duration-300 text-base md:text-lg"
-          >
-            <span>Discuss Your Project</span>
-            <FaArrowRight size={14} />
-          </motion.a>
         </motion.div>
       </div>
 
-      {/* Background Decorative Elements */}
-      <div className="absolute top-1/3 -left-10 md:-left-20 w-40 h-40 md:w-72 md:h-72 bg-blue-100/5 rounded-full blur-xl -z-10"></div>
-      <div className="absolute bottom-1/4 -right-10 md:-right-20 w-40 h-40 md:w-72 md:h-72 bg-purple-100/5 rounded-full blur-xl -z-10"></div>
+      <style jsx>{`
+        @import url('https://fonts.googleapis.com/css2?family=Revalia&display=swap');
+      `}</style>
     </section>
   );
 };

@@ -1,328 +1,357 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { FaArrowRight, FaFigma, FaReact, FaCode, FaPalette, FaDatabase, FaProductHunt, FaServer } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { 
+  FaArrowRight, FaFigma, FaReact, FaCode, FaPalette, FaDatabase, 
+  FaProductHunt, FaServer, FaMagic, FaEnvelope, FaTelegram, 
+  FaInstagram, FaGoogle, FaTimes, FaGem
+} from 'react-icons/fa';
+
+// --- ANIMATION VARIANTS ---
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.6, ease: [0.215, 0.61, 0.355, 1] }
+  })
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+  }
+};
+
+// --- 3D Tilt Card Component ---
+const TiltCard = ({ children, className, ...props }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useTransform(y, [-100, 100], [6, -6]);
+  const rotateY = useTransform(x, [-100, 100], [-6, 6]);
+  const springConfig = { damping: 25, stiffness: 300 };
+  const rotateXSpring = useSpring(rotateX, springConfig);
+  const rotateYSpring = useSpring(rotateY, springConfig);
+  
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const xPercent = (e.clientX - rect.left) / rect.width - 0.5;
+    const yPercent = (e.clientY - rect.top) / rect.height - 0.5;
+    x.set(xPercent * 150);
+    y.set(yPercent * 150);
+  };
+  
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+  
+  return (
+    <motion.div
+      style={{ rotateX: rotateXSpring, rotateY: rotateYSpring, transformStyle: "preserve-3d" }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={className}
+      {...props}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+// --- Glowing Circle Component ---
+const GlowingCircle = ({ size, top, left, delay, duration, color }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.8 }}
+    animate={{ opacity: [0.15, 0.3, 0.15], scale: [1, 1.1, 1] }}
+    transition={{ duration, repeat: Infinity, delay, ease: "easeInOut" }}
+    className="absolute rounded-full blur-[100px]"
+    style={{ width: size, height: size, top, left, background: color }}
+  />
+);
 
 const About = () => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const services = [
+    { number: "01", title: "UI/UX Design", description: "Creating intuitive interfaces and seamless user experiences using Figma & Framer", icon: <FaPalette className="text-gray-400" size={20} /> },
+    { number: "02", title: "Full Stack Dev", description: "Building responsive web apps with React, Next.js, Node.js & databases", icon: <FaCode className="text-gray-400" size={20} /> },
+    { number: "03", title: "Product Design", description: "Designing digital products from concept to launch with Webflow", icon: <FaProductHunt className="text-gray-400" size={20} /> },
+    { number: "04", title: "Database Design", description: "Designing scalable database architectures with MongoDB, Firebase & Supabase", icon: <FaDatabase className="text-gray-400" size={20} /> },
+  ];
+
+  const contactOptions = [
+    { id: "email", label: "Send Email", icon: <FaEnvelope className="text-gray-400" size={18} />, action: () => window.location.href = "mailto:fraolabmas@gmail.com", desc: "fraolabmas@gmail.com", number: "01" },
+    { id: "telegram", label: "Telegram", icon: <FaTelegram className="text-gray-400" size={18} />, action: () => window.open("https://t.me/Fra_juan", "_blank"), desc: "@Fra_juan", number: "02" },
+    { id: "instagram", label: "Instagram", icon: <FaInstagram className="text-gray-400" size={18} />, action: () => window.open("https://instagram.com/fres.h925", "_blank"), desc: "@fres.h925", number: "03" },
+    { id: "gmail", label: "Gmail", icon: <FaGoogle className="text-gray-400" size={18} />, action: () => window.open("https://mail.google.com/mail/?view=cm&fs=1&to=fraolabmas@gmail.com", "_blank"), desc: "Direct Compose", number: "04" }
+  ];
+
+  const handleAction = (url) => window.open(url, "_blank");
+
   return (
-    <section id="about" className="relative py-20 md:py-32 bg-[#FDFDFD] overflow-hidden">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-20">
-        
-        {/* Header - Matching Hero Style */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="max-w-4xl mx-auto mb-16 md:mb-20"
-        >
-          <div className="space-y-3">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-700">About Me</h3>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#2D2D2D] uppercase tracking-tighter leading-none">
-              Crafting Digital
-              <span className="block mt-1 sm:mt-2">Experiences</span>
-            </h2>
-            <p className="text-gray-500 text-base sm:text-lg leading-relaxed max-w-lg font-normal mt-4 md:mt-6">
-              Currently studying Information Systems at Addis Ababa University with 2 years of full-stack development experience.
-            </p>
-          </div>
-        </motion.div>
-
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-start">
-            
-            {/* Left Column - Content with Floating Stats */}
-            <div className="relative">
-              {/* Intro Text */}
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="mb-10 md:mb-12"
-              >
-                <div className="space-y-4 md:space-y-6">
-                  <p className="text-gray-600 leading-relaxed text-base sm:text-lg">
-                    I'm <span className="font-bold text-[#2D2D2D]">Fraol</span>, a passionate full-stack developer currently in my 2nd year of Information Systems at Addis Ababa University. I started my development journey in 12th grade and have been building web applications for 2 years.
-                  </p>
-                  <p className="text-gray-600 leading-relaxed text-base sm:text-lg">
-                    I specialize in creating modern, responsive web applications using cutting-edge technologies. My approach combines clean design with robust functionality to deliver exceptional user experiences.
-                  </p>
+    <>
+      {/* CONTACT MODAL - Premium Glassmorphism */}
+      <AnimatePresence>
+        {isPopupOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-2xl z-[100] flex items-center justify-center p-4 sm:p-6"
+            onClick={() => setIsPopupOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 30 }}
+              className="w-full max-w-xl bg-white/[0.05] backdrop-blur-2xl border border-white/20 rounded-3xl overflow-hidden mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex flex-col md:flex-row">
+                <div className="md:w-2/5 bg-gradient-to-br from-black/80 to-black/60 p-6 md:p-8 text-white">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-4">
+                    <FaGem className="text-gray-400" size={10} />
+                    <span className="text-xs font-bold tracking-[0.2em] text-white/60 uppercase">Connect</span>
+                   
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-bold tracking-tighter" style={{ fontFamily: "'Revalia', cursive" }}>Let's create together.</h3>
+                  <p className="text-gray-400 mt-3 text-sm leading-relaxed" style={{ fontFamily: "'Poppins', sans-serif" }}>Currently accepting new projects and collaborations.</p>
+                  <div className="text-xs text-gray-500 uppercase tracking-widest font-bold mt-8 hidden md:block" style={{ fontFamily: "'Poppins', sans-serif" }}>Fraol Labs © 2026</div>
                 </div>
-              </motion.div>
-
-              {/* Floating Stats - Hero Style */}
-              <div className="relative mt-12 md:mt-16">
-                <div className="grid grid-cols-3 gap-3 md:gap-4">
-                  {[
-                    { value: "2+", label: "Years Exp", color: "from-blue-100 to-blue-50" },
-                    { value: "20+", label: "Projects", color: "from-purple-100 to-purple-50" },
-                    { value: "15+", label: "Clients", color: "from-emerald-100 to-emerald-50" }
-                  ].map((stat, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.1 * index + 0.2 }}
-                      whileHover={{ 
-                        y: -8,
-                        scale: 1.05,
-                        transition: { duration: 0.2 }
-                      }}
-                      className="relative group cursor-pointer"
+                
+                <div className="md:w-3/5 p-6 md:p-8 space-y-3 bg-white/[0.02]">
+                  {contactOptions.map((opt, i) => (
+                    <motion.button
+                      key={opt.id}
+                      whileHover={{ x: 5 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={opt.action}
+                      className="w-full group flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300"
                     >
-                      <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} blur-xl rounded-xl -z-10 group-hover:blur-2xl transition-all duration-300`}></div>
-                      
-                      <div className="relative p-4 md:p-6 rounded-xl md:rounded-2xl bg-white border border-white/80 backdrop-blur-sm 
-                                    shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.9)] 
-                                    group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15),0_0_0_1px_rgba(255,255,255,0.9)]
-                                    transition-all duration-300 text-center">
-                        <p className="text-2xl md:text-3xl font-bold text-[#2D2D2D] mb-1 md:mb-2">{stat.value}</p>
-                        <p className="text-xs md:text-sm text-gray-500">{stat.label}</p>
+                      <div className="flex items-center gap-4">
+                        <div className="text-xs font-bold text-gray-500 min-w-[28px]" style={{ fontFamily: "'Revalia', cursive" }}>{opt.number}</div>
+                        <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                          {opt.icon}
+                        </div>
+                        <div className="text-left">
+                          <div className="text-sm font-semibold text-white" style={{ fontFamily: "'Poppins', sans-serif" }}>{opt.label}</div>
+                          <div className="text-xs text-gray-400" style={{ fontFamily: "'Poppins', sans-serif" }}>{opt.desc}</div>
+                        </div>
                       </div>
-                    </motion.div>
+                      <FaArrowRight className="text-gray-600 group-hover:text-gray-400 transition-colors" size={12} />
+                    </motion.button>
                   ))}
+                  <div className="text-xs text-gray-500 uppercase tracking-widest font-bold mt-4 text-center md:hidden" style={{ fontFamily: "'Poppins', sans-serif" }}>Fraol Labs © 2026</div>
                 </div>
               </div>
-            </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-            {/* Right Column - What I Do with Floating Cards */}
-            <div>
-              <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="space-y-6 md:space-y-8"
+      <section id="about" className="relative w-full min-h-screen bg-[#050505] py-20 md:py-28 overflow-hidden">
+        
+        {/* Dynamic Animated Background */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <GlowingCircle size="500px" top="-10%" left="-10%" delay={0} duration={8} color="rgba(255,255,255,0.05)" />
+          <GlowingCircle size="400px" top="50%" left="70%" delay={2} duration={10} color="rgba(100,150,255,0.06)" />
+          <GlowingCircle size="350px" top="80%" left="20%" delay={4} duration={12} color="rgba(200,100,255,0.04)" />
+          <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+        </div>
+
+        <div className="container mx-auto px-5 sm:px-6 lg:px-8 relative z-10">
+          
+          {/* Header Section */}
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="text-center mb-16 md:mb-20"
+          >
+            <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-md mx-auto">
+              <span className="text-xs font-bold tracking-[0.2em] text-white/60 uppercase" style={{ fontFamily: "'Poppins', sans-serif" }}>About Me</span>
+              <FaMagic className="text-white/40" size={12} />
+            </motion.div>
+
+            <motion.h2 variants={fadeInUp} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-[1.1]" style={{ fontFamily: "'Revalia', cursive" }}>
+              <span className="text-white">Crafting Digital</span>
+              <br />
+              <span className="bg-gradient-to-r from-white via-gray-300 to-white bg-clip-text text-transparent">Experiences</span>
+            </motion.h2>
+            
+            <motion.p variants={fadeInUp} className="text-gray-400 text-base max-w-xl mx-auto mt-6" style={{ fontFamily: "'Poppins', sans-serif" }}>
+              Currently studying Information Systems at Addis Ababa University with 2 years of full-stack development experience.
+            </motion.p>
+          </motion.div>
+
+          <div className="max-w-6xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-start">
+              
+              {/* Left Column - Content with Floating Stats */}
+              <motion.div 
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                variants={staggerContainer}
+                className="relative"
               >
-                {/* Services Header */}
-                <div className="mb-4 md:mb-6">
-                  <h3 className="text-xl md:text-2xl font-bold text-[#2D2D2D] mb-2">What I Do</h3>
-                  <p className="text-gray-400 text-sm">Specialized services & expertise</p>
-                </div>
+                {/* Intro Text */}
+                <motion.div variants={fadeInUp} className="mb-10 md:mb-12">
+                  <div className="space-y-4 md:space-y-6">
+                    <p className="text-gray-400 leading-relaxed text-base sm:text-lg" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                      I'm <span className="text-white font-semibold">Fraol</span>, a passionate full-stack developer currently in my 2nd year of Information Systems at Addis Ababa University. I started my development journey in 12th grade and have been building web applications for 2 years.
+                    </p>
+                    <p className="text-gray-400 leading-relaxed text-base sm:text-lg" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                      I specialize in creating modern, responsive web applications using cutting-edge technologies. My approach combines clean design with robust functionality to deliver exceptional user experiences.
+                    </p>
+                  </div>
+                </motion.div>
 
-                {/* Floating Service Cards */}
-                <div className="space-y-4">
-                  {[
-                    {
-                      title: "UI/UX Design",
-                      description: "Creating intuitive interfaces and seamless user experiences using Figma & Framer",
-                      icon: <FaPalette className="text-blue-500" size={18} />,
-                      color: "blue",
-                      delay: 0
-                    },
-                    {
-                      title: "Full Stack Dev",
-                      description: "Building responsive web apps with React, Next.js, Node.js & databases",
-                      icon: <FaCode className="text-purple-500" size={18} />,
-                      color: "purple",
-                      delay: 0.1
-                    },
-                    {
-                      title: "Product Design",
-                      description: "Designing digital products from concept to launch with Webflow",
-                      icon: <FaProductHunt className="text-emerald-500" size={18} />,
-                      color: "emerald",
-                      delay: 0.2
-                    },
-                    {
-                      title: "Database Design",
-                      description: "Designing scalable database architectures with MongoDB, Firebase & Supabase",
-                      icon: <FaDatabase className="text-amber-500" size={18} />,
-                      color: "amber",
-                      delay: 0.3
-                    }
-                  ].map((service, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: service.delay }}
-                      whileHover={{ 
-                        y: -6,
-                        scale: 1.02,
-                        transition: { duration: 0.2 }
-                      }}
-                      className="relative group cursor-pointer"
-                    >
-                      {/* Floating Shadow Effect */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-gray-200/30 to-gray-100/20 blur-xl rounded-xl -z-10 group-hover:blur-2xl transition-all duration-300"></div>
-                      
-                      {/* Main Card */}
-                      <div className="relative p-4 md:p-5 rounded-xl md:rounded-2xl bg-white border border-white/80 backdrop-blur-sm 
-                                    shadow-[0_8px_30px_-10px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.9)] 
-                                    group-hover:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.15),0_0_0_1px_rgba(255,255,255,0.9)]
-                                    transition-all duration-300">
-                        
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start gap-3 md:gap-4">
-                            {/* Icon Container */}
-                            <motion.div 
-                              whileHover={{ rotate: 10, scale: 1.1 }}
-                              className={`w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center 
-                                        shadow-[0_6px_15px_-5px_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(255,255,255,0.8)]
-                                        ${service.color === 'blue' ? 'bg-gradient-to-br from-blue-50 to-blue-100/50' :
-                                          service.color === 'purple' ? 'bg-gradient-to-br from-purple-50 to-purple-100/50' :
-                                          service.color === 'emerald' ? 'bg-gradient-to-br from-emerald-50 to-emerald-100/50' :
-                                          'bg-gradient-to-br from-amber-50 to-amber-100/50'}`}
-                            >
-                              {service.icon}
-                            </motion.div>
-                            
-                            <div className="flex-1">
-                              <h4 className="text-base md:text-lg font-semibold text-[#2D2D2D] mb-1 md:mb-1.5">
-                                {service.title}
-                              </h4>
-                              <p className="text-gray-500 text-xs md:text-sm leading-relaxed">
-                                {service.description}
-                              </p>
-                            </div>
-                          </div>
-                          
-                          {/* Floating Arrow */}
-                          <motion.div
-                            animate={{ x: [0, 3, 0] }}
-                            transition={{ 
-                              repeat: Infinity, 
-                              duration: 2,
-                              delay: index * 0.3
-                            }}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1 md:mt-2"
-                          >
-                            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-sm">
-                              <FaArrowRight className="text-gray-500 group-hover:text-gray-700 transition-colors" size={10} />
-                            </div>
-                          </motion.div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Tech Stack - Floating Tags */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.5 }}
-                  className="pt-8 md:pt-10 border-t border-gray-100"
-                >
-                  <h4 className="text-lg font-bold text-[#2D2D2D] mb-4 md:mb-5">Tech Stack</h4>
-                  <div className="flex flex-wrap gap-2 md:gap-3">
+                {/* Floating Stats - Glassmorphic */}
+                <div className="relative mt-12 md:mt-16">
+                  <div className="grid grid-cols-3 gap-3 md:gap-4">
                     {[
-                      { name: "Figma", color: "from-pink-100 to-pink-50" },
-                      { name: "Framer", color: "from-rose-100 to-rose-50" },
-                      { name: "Webflow", color: "from-purple-100 to-purple-50" },
-                      { name: "React", color: "from-blue-100 to-blue-50" },
-                      { name: "Next.js", color: "from-gray-100 to-gray-50" },
-                      { name: "Node.js", color: "from-green-100 to-green-50" },
-                      { name: "Tailwind", color: "from-teal-100 to-teal-50" },
-                      { name: "MongoDB", color: "from-emerald-100 to-emerald-50" },
-                      { name: "Firebase", color: "from-amber-100 to-amber-50" },
-                      { name: "Supabase", color: "from-sky-100 to-sky-50" },
-                      { name: "HTML/CSS", color: "from-orange-100 to-orange-50" },
-                      { name: "Git", color: "from-slate-100 to-slate-50" }
-                    ].map((tech, index) => (
+                      { value: "2+", label: "Years Exp", number: "01" },
+                      { value: "20+", label: "Projects", number: "02" },
+                      { value: "15+", label: "Clients", number: "03" }
+                    ].map((stat, index) => (
                       <motion.div
-                        key={tech.name}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.03 * index + 0.6 }}
-                        whileHover={{ scale: 1.1, y: -3 }}
-                        className="relative group cursor-pointer"
+                        key={index}
+                        variants={fadeInUp}
+                        custom={index}
+                        whileHover={{ y: -5, scale: 1.02 }}
                       >
-                        <div className={`absolute inset-0 bg-gradient-to-br ${tech.color} blur-md rounded-full -z-10 group-hover:blur-lg transition-all duration-300`}></div>
-                        
-                        <div className="relative px-3 py-1.5 md:px-4 md:py-2.5 bg-white/90 border border-white/80 rounded-full 
-                                      shadow-[0_6px_20px_-8px_rgba(0,0,0,0.08),0_0_0_1px_rgba(255,255,255,0.8)]
-                                      group-hover:shadow-[0_10px_25px_-8px_rgba(0,0,0,0.12),0_0_0_1px_rgba(255,255,255,0.9)]
-                                      transition-all duration-300">
-                          <span className="text-xs md:text-sm font-medium text-gray-700">{tech.name}</span>
-                        </div>
+                        <TiltCard>
+                          <div className="group relative p-4 md:p-6 rounded-xl bg-white/[0.03] backdrop-blur-xl border border-white/10 hover:bg-white/[0.06] hover:border-white/20 transition-all duration-500 overflow-hidden">
+                            {/* Glowing Sheen */}
+                            <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent pointer-events-none" />
+                            
+                            {/* Number */}
+                            <div className="text-xs font-bold text-gray-500 mb-2" style={{ fontFamily: "'Revalia', cursive" }}>{stat.number}</div>
+                            
+                            <p className="text-2xl md:text-3xl font-bold text-white mb-1 md:mb-2" style={{ fontFamily: "'Revalia', cursive" }}>{stat.value}</p>
+                            <p className="text-xs md:text-sm text-gray-500" style={{ fontFamily: "'Poppins', sans-serif" }}>{stat.label}</p>
+                          </div>
+                        </TiltCard>
                       </motion.div>
                     ))}
                   </div>
-                </motion.div>
+                </div>
+              </motion.div>
+
+              {/* Right Column - What I Do with Numbered Cards */}
+              <motion.div 
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                variants={staggerContainer}
+              >
+                <div className="space-y-6 md:space-y-8">
+                  {/* Services Header */}
+                  <motion.div variants={fadeInUp} className="mb-4 md:mb-6">
+                    <h3 className="text-xl md:text-2xl font-bold text-white mb-2" style={{ fontFamily: "'Revalia', cursive" }}>What I Do</h3>
+                    <p className="text-gray-500 text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>Specialized services & expertise</p>
+                  </motion.div>
+
+                  {/* Numbered Service Cards */}
+                  <div className="space-y-4">
+                    {services.map((service, index) => (
+                      <motion.div
+                        key={index}
+                        variants={fadeInUp}
+                        custom={index}
+                        whileHover={{ scale: 1.01, x: 3 }}
+                      >
+                        <TiltCard>
+                          <div className="group relative flex items-center gap-4 p-4 bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-xl hover:bg-white/[0.06] hover:border-white/20 transition-all duration-500 overflow-hidden">
+                            {/* Glowing Sheen */}
+                            <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent pointer-events-none" />
+                            
+                            {/* Number */}
+                            <motion.div 
+                              initial={{ x: -15, opacity: 0 }}
+                              whileInView={{ x: 0, opacity: 1 }}
+                              transition={{ delay: index * 0.08 + 0.2 }}
+                              className="text-xl font-bold bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent min-w-[45px]"
+                              style={{ fontFamily: "'Revalia', cursive" }}
+                            >
+                              {service.number}
+                            </motion.div>
+                            
+                            {/* Icon */}
+                            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+                              {service.icon}
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-sm font-semibold text-white mb-0.5" style={{ fontFamily: "'Revalia', cursive" }}>{service.title}</h4>
+                              <p className="text-xs text-gray-400 leading-relaxed" style={{ fontFamily: "'Poppins', sans-serif" }}>{service.description}</p>
+                            </div>
+                            
+                            <FaArrowRight className="text-gray-600 group-hover:text-white transition-colors opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all" size={12} />
+                          </div>
+                        </TiltCard>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
               </motion.div>
             </div>
-          </div>
 
-          {/* Philosophy Section - Made Smaller & Responsive */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="mt-20 md:mt-24 pt-8 md:pt-12 border-t border-gray-100"
-          >
-            <div className="relative max-w-2xl mx-auto">
-              {/* Floating Background Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-100/10 to-purple-100/10 blur-xl -z-10 rounded-full"></div>
-              
-              <div className="relative p-6 md:p-8 rounded-2xl bg-gradient-to-br from-white to-white/80 border border-white/80 backdrop-blur-sm
-                            shadow-[0_15px_40px_-15px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.9)] text-center">
-                <h3 className="text-xl md:text-2xl font-bold text-[#2D2D2D] mb-3 md:mb-4">Design Philosophy</h3>
-                <p className="text-gray-600 text-base md:text-lg leading-relaxed mb-6 md:mb-8 italic">
-                  "Great design solves problems. I focus on creating intuitive, user-centered interfaces that are both beautiful and functional."
-                </p>
-                
-                <div className="flex flex-wrap justify-center gap-2 md:gap-3">
-                  {["User-Centered", "Minimal", "Purposeful"].map((principle, index) => (
-                    <motion.span
-                      key={principle}
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.1 * index + 0.2 }}
-                      whileHover={{ scale: 1.05 }}
-                      className="px-4 py-2 md:px-5 md:py-2.5 bg-white/90 border border-white/80 rounded-full font-medium text-gray-700 text-sm
-                                shadow-[0_6px_20px_-8px_rgba(0,0,0,0.08),0_0_0_1px_rgba(255,255,255,0.8)]
-                                hover:shadow-[0_10px_25px_-8px_rgba(0,0,0,0.12),0_0_0_1px_rgba(255,255,255,0.9)]
-                                transition-all duration-300 cursor-default"
-                    >
-                      {principle}
-                    </motion.span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Call to Action - Matching Hero Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="mt-16 md:mt-20 text-center"
-          >
-            <motion.a 
-              href="#contact"
-              whileHover={{ scale: 1.05, backgroundColor: "#1a1a1a" }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-3 px-8 py-4 md:px-10 md:py-5 bg-[#2D2D2D] text-white font-semibold rounded-full 
-                        shadow-[0_15px_30px_-10px_rgba(0,0,0,0.2)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.25)]
-                        transition-all duration-300 text-base md:text-lg"
-            >
-              <span>Let's Create Together</span>
-              <FaArrowRight size={14} />
-            </motion.a>
-            
-            {/* Decorative Floating Element */}
+            {/* Call to Action - Opens Contact Modal */}
             <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ repeat: Infinity, duration: 3 }}
-              className="mt-8 md:mt-12 text-gray-400 text-sm"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="mt-16 md:mt-20 text-center"
             >
-              ↓ Scroll to see projects
+              <motion.button
+                onClick={() => setIsPopupOpen(true)}
+                whileHover={{ scale: 1.05, y: -3 }}
+                whileTap={{ scale: 0.98 }}
+                className="group relative inline-flex items-center gap-3 px-10 py-5 bg-white text-black font-semibold rounded-xl overflow-hidden transition-all duration-300 shadow-[0_8px_32px_rgba(255,255,255,0.1)] hover:shadow-[0_15px_40px_rgba(255,255,255,0.15)]"
+                style={{ fontFamily: "'Revalia', cursive" }}
+              >
+                {/* Animated Background Effect */}
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: "100%" }}
+                  transition={{ duration: 0.6 }}
+                />
+                
+                <span className="relative z-10">Let's Create Together</span>
+                <motion.div
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                  className="relative z-10"
+                >
+                  <FaArrowRight size={14} />
+                </motion.div>
+              </motion.button>
+              
+              {/* Decorative Floating Element */}
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ repeat: Infinity, duration: 3 }}
+                className="mt-8 md:mt-12 text-gray-500 text-sm"
+                style={{ fontFamily: "'Poppins', sans-serif" }}
+              >
+                ↓ Scroll to see projects
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Background Decorative Elements */}
-      <div className="absolute top-1/4 -left-10 md:-left-20 w-40 h-40 md:w-72 md:h-72 bg-blue-100/10 rounded-full blur-2xl -z-10"></div>
-      <div className="absolute bottom-1/4 -right-10 md:-right-20 w-40 h-40 md:w-80 md:h-80 bg-purple-100/10 rounded-full blur-2xl -z-10"></div>
-    </section>
+      <style jsx>{`
+        @import url('https://fonts.googleapis.com/css2?family=Revalia&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+      `}</style>
+    </>
   );
 };
 
