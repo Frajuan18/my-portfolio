@@ -139,7 +139,7 @@ const Hero = () => {
         )}
       </AnimatePresence>
 
-      <section id="home" className="relative w-full min-h-screen bg-[#050505] flex items-center justify-center overflow-hidden pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20">
+      <section id="#home" className="relative w-full min-h-screen bg-[#050505] flex items-center justify-center overflow-hidden pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20">
         
         {/* Dynamic Animated Background */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">

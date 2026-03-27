@@ -256,7 +256,7 @@ const Experience = () => {
         )}
       </AnimatePresence>
 
-      <section id="experience" className="relative w-full min-h-screen bg-[#050505] py-20 md:py-28 overflow-hidden">
+      <section id="#experience" className="relative w-full min-h-screen bg-[#050505] py-20 md:py-28 overflow-hidden">
         
         {/* Animated Background */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
