@@ -177,8 +177,8 @@ const Hero = () => {
                   style={{ fontFamily: "'Revalia', cursive" }}
                 >
                   <span className="text-white">FRAOL</span>
-                  <br /> 
-                  <span className="bg-gradient-to-r from-white via-gray-300 to-white bg-clip-text text-transparent">DESIGN</span>
+                  
+                  <span className="bg-gradient-to-r from-white via-gray-300 to-white bg-clip-text text-transparent">.</span>
                 </motion.h1>
                 
                 <motion.p 
